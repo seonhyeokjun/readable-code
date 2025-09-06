@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class MinesweeperGame {
-
     public static final int BOARD_ROW_SIZE = 8;
     public static final int BOARD_COL_SIZE = 10;
     public static final Scanner SCANNER = new Scanner(System.in);
