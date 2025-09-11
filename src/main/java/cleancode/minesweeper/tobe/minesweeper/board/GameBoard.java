@@ -1,11 +1,13 @@
 package cleancode.minesweeper.tobe.minesweeper.board;
 
 import cleancode.minesweeper.tobe.minesweeper.board.cell.*;
-import cleancode.minesweeper.tobe.minesweeper.gamelevel.GameLevel;
 import cleancode.minesweeper.tobe.minesweeper.board.position.CellPosition;
 import cleancode.minesweeper.tobe.minesweeper.board.position.CellPositions;
 import cleancode.minesweeper.tobe.minesweeper.board.position.RelativePosition;
+import cleancode.minesweeper.tobe.minesweeper.gamelevel.GameLevel;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 public class GameBoard {
@@ -138,21 +140,33 @@ public class GameBoard {
     }
 
     private void openSurroundCells(CellPosition cellPosition) {
-        if (isOpenedCell(cellPosition)) {
+        Deque<CellPosition> stack = new ArrayDeque<>();
+        stack.push(cellPosition);
+
+        while (!stack.isEmpty()) {
+            openSurroundCellAt(stack);
+        }
+    }
+
+    private void openSurroundCellAt(Deque<CellPosition> stack) {
+        CellPosition currentCellPosition = stack.pop();
+        if (isOpenedCell(currentCellPosition)) {
             return;
         }
-        if (isLandMineCellAt(cellPosition)) {
+        if (isLandMineCellAt(currentCellPosition)) {
             return;
         }
 
-        openOneCellAt(cellPosition);
+        openOneCellAt(currentCellPosition);
 
-        if (doesCellHaveLandMindCount(cellPosition)) {
+        if (doesCellHaveLandMindCount(currentCellPosition)) {
             return;
         }
 
-        List<CellPosition> surroundPositions = calculateSurroundPositions(cellPosition, getRowSize(), getColSize());
-        surroundPositions.forEach(this::openSurroundCells);
+        List<CellPosition> surroundPositions = calculateSurroundPositions(currentCellPosition, getRowSize(), getColSize());
+        for (CellPosition surroundPosition : surroundPositions) {
+            stack.push(surroundPosition);
+        }
     }
 
     private boolean isLandMineCellAt(CellPosition cellPosition) {
